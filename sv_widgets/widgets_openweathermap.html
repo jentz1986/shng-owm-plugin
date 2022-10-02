@@ -1,6 +1,13 @@
 {% macro irrigation(id, info_title, gad_irrigation_valve_root) %}
 {% import config_version_full >= "3.2.c" ? "@widgets/basic.html" : "basic.html" as basic %}
 {% import config_version_full >= "3.2.c" ? "@widgets/device.html" : "device.html" as device %}
+/**
+* Daily irrigation widget
+*  
+* @param {id=} unique id for this widget (optional)  
+* @param {info_title} headline of this irrigation area  
+* @param {gad_irrigation_valve_root} an item with the owm-struct
+*/
 <div class="cells" style="height: 60px;">
     <div class="cell3" style="text-align: left;">{{ basic.stateswitch(id~'sw', gad_irrigation_valve_root, 'icon', '', [ icon_off | default('sani_water_tap.svg'), icon_on | default('sani_irrigation.svg')]) }} &nbsp;
         &nbsp;{{ info_title }}</div>
@@ -60,6 +67,15 @@
 {% macro irrigation_weekly(id, info_title, gad_irrigation_valve_root, icon_on, icon_off) %}
 {% import config_version_full >= "3.2.c" ? "@widgets/basic.html" : "basic.html" as basic %}
 {% import config_version_full >= "3.2.c" ? "@widgets/device.html" : "device.html" as device %}
+/**
+* Weekly irrigation widget
+*  
+* @param {id=} unique id for this widget (optional)  
+* @param {info_title} headline of this irrigation area  
+* @param {gad_irrigation_valve_root} an item with the owm-struct
+* @param {icon_on} icon to be used if on
+* @param {icon_off} icon to be used if off
+*/
 <div class="cells" style="height: 60px;">
     <div class="cell3" style="text-align: left;">{{ basic.stateswitch(id~'sw', gad_irrigation_valve_root, 'icon', '', [ icon_off | default('sani_irrigation_pop_up_off.svg'), icon_on | default('sani_irrigation_pop_up_on.svg')]) }} &nbsp;
         &nbsp;{{ info_title }}</div>
@@ -109,21 +125,16 @@
 {% endmacro %}
 
 
-
-
-
-/**
-* Displays a heating curve (outside temperature compared to heating flow temperature) with current datapoint
-*
-* @param {id=} unique id for this widget (optional)
-* @param {item(str)} an item containing the pairs of temperatures
-*        Sorted array in format: [[outside1, heating_temp], [outside2, heating_temp] ...]
-* @param {item(num)} an item for the current outside temperature
-* @param {item(num)} an item for the current heating flow temperature
-* @param {text[?]=} object with additional options for Highcharts, see https://api.highcharts.com/ (optional)
-*/
 {% macro rain_overview(id, item_virtual_past24h_rain_all, item_virtual_next24h_rain_all, item_current_dt, chartoptions) %}
-
+/**
+* Overview for Rain in the past 12h and future 12h
+*  
+* @param {id=} unique id for this widget (optional)  
+* @param {item_virtual_past24h_rain_all} item with rain in the past 24h 
+* @param {item_virtual_next24h_rain_all} item with rain in the next 24h 
+* @param {item_current_dt} item for the current date 
+* @param {chartoptions} chartoptions (optional)
+*/
     <div {% if not id is empty %} id="{{ uid(page, id) }}"{% endif %}
         data-widget="widgets_openweathermap.rain_overview"
         data-item="{{ item_virtual_past24h_rain_all }}, {{ item_virtual_next24h_rain_all }}, {{item_current_dt}}"

@@ -104,8 +104,10 @@ class OpenWeatherMap(SmartPlugin):
         self._lang = self.get_parameter_value('lang')
         self._units = self.get_parameter_value('units')
 
-        softfail_mode_precipitation = self.get_parameter_value('softfail_precipitation')
-        softfail_mode_wind_gust = self.get_parameter_value('softfail_wind_gust')
+        softfail_mode_precipitation = self.get_parameter_value(
+            'softfail_precipitation')
+        softfail_mode_wind_gust = self.get_parameter_value(
+            'softfail_wind_gust')
 
         self._soft_fails = {
             "rain/1h": softfail_mode_precipitation,
@@ -226,21 +228,32 @@ class OpenWeatherMap(SmartPlugin):
         self.__query_api_if(self._data_source_key_weather, force=True)
         self.__query_api_if(self._data_source_key_forecast, force=True)
         self.__query_api_if(self._data_source_key_uvi, force=True)
-        self.__query_api_if(self._data_source_key_airpollution_current, force=True)
-        self.__query_api_if(self._data_source_key_airpollution_forecast, force=True)
+        self.__query_api_if(
+            self._data_source_key_airpollution_current, force=True)
+        self.__query_api_if(
+            self._data_source_key_airpollution_forecast, force=True)
 
-        self.__query_api_if(self._data_source_key_airpollution_back1day, force=True, delta_t=-1)
-        self.__query_api_if(self._data_source_key_airpollution_back2day, force=True, delta_t=-2)
-        self.__query_api_if(self._data_source_key_airpollution_back3day, force=True, delta_t=-3)
-        self.__query_api_if(self._data_source_key_airpollution_back4day, force=True, delta_t=-4)
+        self.__query_api_if(
+            self._data_source_key_airpollution_back1day, force=True, delta_t=-1)
+        self.__query_api_if(
+            self._data_source_key_airpollution_back2day, force=True, delta_t=-2)
+        self.__query_api_if(
+            self._data_source_key_airpollution_back3day, force=True, delta_t=-3)
+        self.__query_api_if(
+            self._data_source_key_airpollution_back4day, force=True, delta_t=-4)
 
         self.__query_api_if(self._data_source_key_onecall, force=True)
 
-        self.__query_api_if(self._data_source_key_back0day,force=True, delta_t=0)
-        self.__query_api_if(self._data_source_key_back1day, force=True, delta_t=-1)
-        self.__query_api_if(self._data_source_key_back2day, force=True, delta_t=-2)
-        self.__query_api_if(self._data_source_key_back3day, force=True, delta_t=-3)
-        self.__query_api_if(self._data_source_key_back4day, force=True, delta_t=-4)
+        self.__query_api_if(self._data_source_key_back0day,
+                            force=True, delta_t=0)
+        self.__query_api_if(self._data_source_key_back1day,
+                            force=True, delta_t=-1)
+        self.__query_api_if(self._data_source_key_back2day,
+                            force=True, delta_t=-2)
+        self.__query_api_if(self._data_source_key_back3day,
+                            force=True, delta_t=-3)
+        self.__query_api_if(self._data_source_key_back4day,
+                            force=True, delta_t=-4)
 
     def _download_data(self):
         """
@@ -395,7 +408,8 @@ class OpenWeatherMap(SmartPlugin):
                     raise Exception(f"Cannot make sense of {s}")
                 s = updated_s
             else:
-                ret_val, s = self.__get_val_from_dict(s, wrk, correlation_hint, owm_matchstring)
+                ret_val, s = self.__get_val_from_dict(
+                    s, wrk, correlation_hint, owm_matchstring)
         except Exception as e:
             was_ok = False
             ret_val = e
@@ -422,7 +436,8 @@ class OpenWeatherMap(SmartPlugin):
 
         for item_path, owm_item_data in self._raw_items.items():
             data_source_key, item = owm_item_data
-            raw = json.dumps(self._data_sources[data_source_key]['data'], indent=4)
+            raw = json.dumps(
+                self._data_sources[data_source_key]['data'], indent=4)
             item(raw, self.get_shortname(), f"raw // {data_source_key}")
             pass
 
@@ -495,7 +510,7 @@ class OpenWeatherMap(SmartPlugin):
         rS = solarRad * 3.6
         U_2 = climate_speed * 0.748
         slopeSvpc = 4098 * (0.6108 * math.exp((17.27 * tMean) /
-                            (tMean + 237.3))) / math.pow((tMean + 237.3), 2)
+                                              (tMean + 237.3))) / math.pow((tMean + 237.3), 2)
         pA = climate_pressure / 10
         pSc = pA * 0.000665
         DT = slopeSvpc / (slopeSvpc + (pSc * (1 + (0.34 * U_2))))
@@ -556,7 +571,8 @@ class OpenWeatherMap(SmartPlugin):
                     raise Exception(
                         "Cannot get value further than 48h in future, switch unit to 'd' to see further into the future")
                 for hr in range(0, number):
-                    val = self.get_value(f'hour/{hr}/{data_field}', correlation_hint)
+                    val = self.get_value(
+                        f'hour/{hr}/{data_field}', correlation_hint)
                     if not isinstance(val, Exception):
                         pool.append(val)
             elif unit == 'd':
@@ -564,7 +580,8 @@ class OpenWeatherMap(SmartPlugin):
                     raise Exception(
                         "Cannot get value further than 6d in future")
                 for day in range(0, number):
-                    val = self.get_value(f'day/{day}/{data_field}', correlation_hint)
+                    val = self.get_value(
+                        f'day/{day}/{data_field}', correlation_hint)
                     if not isinstance(val, Exception):
                         pool.append(val)
         elif mode == 'past':
@@ -610,18 +627,20 @@ class OpenWeatherMap(SmartPlugin):
             return f"Unknown operation '{operation}' in match_string '{virtual_ms}'"
 
     def __handle_fail(self, last_popped, current_leaf, successful_path, original_match_string, correlation_hint):
-        missing_child_path = last_popped if len(current_leaf) == 0 else f"{last_popped}/{'/'.join(current_leaf)}"
+        missing_child_path = last_popped if len(
+            current_leaf) == 0 else f"{last_popped}/{'/'.join(current_leaf)}"
         fail_match_string = f"{last_popped}/{'/'.join(current_leaf)}"
-                
+
         if fail_match_string in self._soft_fails:
             soft_fail_mode = self._soft_fails[fail_match_string]
             if soft_fail_mode == "log_info":
                 raise OpenWeatherMapNoValueSoftException(
                     f"Missing child '{last_popped}' after '{'/'.join(successful_path)}' (complete path missing: {missing_child_path})")
             elif soft_fail_mode == "no_update":
-                changed_match_string = '/'.join(successful_path) + missing_child_path
+                changed_match_string = '/'.join(successful_path) + \
+                    missing_child_path
                 self.logger.debug(
-                            "%s DEBUG: owm-string: %s --> %s, Missing Child, Soft-Fail to no_update" % (correlation_hint, original_match_string, changed_match_string))
+                    "%s DEBUG: owm-string: %s --> %s, Missing Child, Soft-Fail to no_update" % (correlation_hint, original_match_string, changed_match_string))
                 return None
             elif soft_fail_mode.startswith("number="):
                 return int(soft_fail_mode.replace("number=", ""))
@@ -636,13 +655,12 @@ class OpenWeatherMap(SmartPlugin):
                     else:
                         match_path.append(fragment)
                 new_match_string = "/".join(match_path)
-                self.logger.debug(f"{correlation_hint} '{original_match_string}' is matching soft_fail '{fail_match_string}' and will query '{new_match_string}'")
+                self.logger.debug(
+                    f"{correlation_hint} '{original_match_string}' is matching soft_fail '{fail_match_string}' and will query '{new_match_string}'")
                 return self.get_value_or_raise(new_match_string, correlation_hint)
 
         raise OpenWeatherMapNoValueHardException(
             f"Missing child '{last_popped}' after '{'/'.join(successful_path)}' (complete path missing: {missing_child_path})")
-           
-
 
     def __get_val_from_dict(self, s, wrk, correlation_hint, original_match_string):
         """
@@ -654,7 +672,8 @@ class OpenWeatherMap(SmartPlugin):
         while True:
             if (len(sp) == 0) or (wrk is None):
                 if wrk is None:
-                    wrk = self.__handle_fail(last_popped, sp, successful_path, original_match_string, correlation_hint)
+                    wrk = self.__handle_fail(
+                        last_popped, sp, successful_path, original_match_string, correlation_hint)
                 break
 
             if type(wrk) is list:
@@ -727,7 +746,8 @@ class OpenWeatherMap(SmartPlugin):
                     if dt >= int(too_far.timestamp()):
                         break
                     if dt >= int(date_requested.timestamp()):
-                        val, _ = self.__get_val_from_dict("/".join(sp), entry, "", original_match_string)
+                        val, _ = self.__get_val_from_dict(
+                            "/".join(sp), entry, "", original_match_string)
                         if isinstance(val, float) or isinstance(val, int):
                             wrk.append(val)
                         elif val is None:
@@ -769,23 +789,34 @@ class OpenWeatherMap(SmartPlugin):
         Requests the weather information at openweathermap.com
         """
         try:
-            url = self.__build_url(data_source_key, delta_t=delta_t, force=force)
+            url = self.__build_url(
+                data_source_key, delta_t=delta_t, force=force)
             response = self._session.get(url)
         except Exception as e:
             self.logger.error(
-                "__query_api: Exception when sending GET request for data_source_key '%s': %s" % (data_source_key, str(e)))
-            return
-        num_bytes = len(response.content)
-        self.logger.debug(f"Received {num_bytes} bytes for {data_source_key} from {url}")
-        if num_bytes < 50:
-            self.logger.error(f"Response for {data_source_key} from {url} was too short to be meaningful: '{response.content}'")
+                f"Request failed for DataSource {data_source_key}: {str(e)}")
             return
 
-        json_obj = response.json()
+        if response.ok:
+            num_bytes = len(response.content)
+            self.logger.debug(
+                f"Received {num_bytes} bytes for {data_source_key} from {url}")
+            if num_bytes < 50:
+                self.logger.error(
+                    f"Response for {data_source_key} from {url} was too short to be meaningful ({num_bytes} bytes): '{response.content}'")
+                return
+            try:
+                json_obj = response.json()
 
-        self._data_sources[data_source_key]['url'] = url
-        self._data_sources[data_source_key]['fetched'] = datetime.now()
-        self._data_sources[data_source_key]['data'] = json_obj
+                self._data_sources[data_source_key]['url'] = url
+                self._data_sources[data_source_key]['fetched'] = datetime.now()
+                self._data_sources[data_source_key]['data'] = json_obj
+            except json.JSONDecodeError as decode_error:
+                self.logger.error(
+                    f"Response for {data_source_key} from {url} could not be parsed: '{decode_error.msg}'")
+        else:
+            self.logger.error(
+                f"Response for {data_source_key} from {url} returned status-code: '{response.status_code}'")
 
     def parse_item(self, item):
         """
@@ -1010,20 +1041,22 @@ class OpenWeatherMap(SmartPlugin):
         splitted = match_string_within_file.split("/")
         src = self._data_sources[data_source_key]['data']
         daten = json.dumps(src, indent=4).splitlines()
-        
+
         last_line = 0
         for pos_in_match_string in range(len(splitted)):
             if splitted[pos_in_match_string].isnumeric():
                 number = int(splitted[pos_in_match_string]) + 1
                 for line_in_file in range(last_line, len(daten)):
-                    now_search_for = ((" " * 4) * (pos_in_match_string + 1)) + "{"
+                    now_search_for = (
+                        (" " * 4) * (pos_in_match_string + 1)) + "{"
                     if daten[line_in_file] == now_search_for:
                         number = number - 1
                         if number == 0:
                             last_line = line_in_file
                             break
             else:
-                now_search_for = ((" " * 4) * (pos_in_match_string + 1)) + f'"{splitted[pos_in_match_string]}":'
+                now_search_for = (
+                    (" " * 4) * (pos_in_match_string + 1)) + f'"{splitted[pos_in_match_string]}":'
                 for line_in_file in range(last_line, len(daten)):
                     if daten[line_in_file].startswith(now_search_for):
                         last_line = line_in_file
