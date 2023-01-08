@@ -776,6 +776,8 @@ class OpenWeatherMap(SmartPlugin):
             except json.JSONDecodeError as decode_error:
                 self.logger.error(
                     f"Response for {data_source_key} from {url} could not be parsed: '{decode_error.msg}'")
+        elif response.status_code == 401:
+            self.logger.error(f"Access denied for {url}, received: '{response.text}'")
         else:
             self.logger.error(
                 f"Response for {data_source_key} from {url} returned status-code: '{response.status_code}'")
