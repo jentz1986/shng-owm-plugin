@@ -431,10 +431,8 @@ class OpenWeatherMap(SmartPlugin):
             if owm_matchstring in self._origins_layer:
                 ret_val = self.__build_url('owm_layer', item)
                 wrk_typ = 'owm_layer'
-                item(ret_val, self.get_shortname(),
-                     f"{wrk_typ} // {owm_matchstring}")
-                self.logger.debug(
-                    "%s OK: owm-string: %s as layer" % (item, owm_matchstring))
+                item(ret_val, self.get_shortname(), f"{wrk_typ} // {owm_matchstring}")
+                self.logger.debug("%s OK: owm-string: %s as layer" % (item, owm_matchstring))
             else:
                 try:
                     ret_val, wrk_typ, changed_match_string, was_ok = self.get_value_with_meta(
@@ -458,8 +456,7 @@ class OpenWeatherMap(SmartPlugin):
                             self.logger.warning(
                                 "%s OK, FIXED: owm-string: %s --> %s from wrk=%s" % (item, owm_matchstring, changed_match_string, wrk_typ))
                 except Exception as e:
-                    self.logger.error(
-                        "%s FATAL: owm-string: %s, Error: %s" % (item, owm_matchstring, e))
+                    self.logger.error("%s FATAL: owm-string: %s, Error: %s" % (item, owm_matchstring, e))
 
         return
 
@@ -473,21 +470,14 @@ class OpenWeatherMap(SmartPlugin):
         """
         self.logger.debug("%s _calculate_eto: for %s" %
                           ((correlation_hint, s)))
-        sunrise_value = self.get_value_or_raise(
-            s.replace('/eto', "/sunrise"), correlation_hint)
+        sunrise_value = self.get_value_or_raise(s.replace('/eto', "/sunrise"), correlation_hint)
         climate_sunrise = datetime.utcfromtimestamp(int(sunrise_value))
-        climate_humidity = self.get_value_or_raise(
-            s.replace('/eto', "/humidity"), correlation_hint)
-        climate_pressure = self.get_value_or_raise(
-            s.replace('/eto', "/pressure"), correlation_hint)
-        climate_min = self.get_value_or_raise(
-            s.replace('/eto', "/temp" if s.startswith('day/-') else "/temp/min"), correlation_hint)
-        climate_max = self.get_value_or_raise(
-            s.replace('/eto', "/temp" if s.startswith('day/-') else "/temp/max"), correlation_hint)
-        climate_speed = self.get_value_or_raise(
-            s.replace('/eto', "/wind_speed"), correlation_hint)
-        solarRad = self.get_value_or_raise(
-            s.replace('/eto', "/uvi"), correlation_hint)
+        climate_humidity = self.get_value_or_raise(s.replace('/eto', "/humidity"), correlation_hint)
+        climate_pressure = self.get_value_or_raise(s.replace('/eto', "/pressure"), correlation_hint)
+        climate_min = self.get_value_or_raise(s.replace('/eto', "/temp" if s.startswith('day/-') else "/temp/min"), correlation_hint)
+        climate_max = self.get_value_or_raise(s.replace('/eto', "/temp" if s.startswith('day/-') else "/temp/max"), correlation_hint)
+        climate_speed = self.get_value_or_raise(s.replace('/eto', "/wind_speed"), correlation_hint)
+        solarRad = self.get_value_or_raise(s.replace('/eto', "/uvi"), correlation_hint)
         alt = float(self._elev)
         lat = float(self._lat)
 
@@ -553,16 +543,14 @@ class OpenWeatherMap(SmartPlugin):
         if mode == 'next':
             if unit == 'h':
                 if number > 48:
-                    raise Exception(
-                        "Cannot get value further than 48h in future, switch unit to 'd' to see further into the future")
+                    raise Exception("Cannot get value further than 48h in future, switch unit to 'd' to see further into the future")
                 for hr in range(0, number):
                     val = self.get_value(f'hour/{hr}/{data_field}', correlation_hint)
                     if not isinstance(val, Exception):
                         pool.append(val)
             elif unit == 'd':
                 if number > 6:
-                    raise Exception(
-                        "Cannot get value further than 6d in future")
+                    raise Exception("Cannot get value further than 6d in future")
                 for day in range(0, number):
                     val = self.get_value(f'day/{day}/{data_field}', correlation_hint)
                     if not isinstance(val, Exception):
@@ -574,13 +562,11 @@ class OpenWeatherMap(SmartPlugin):
                 hours = number
 
             days_back = int(hours / 24) + 1
-            self.logger.debug(
-                f"PAST: {virtual_ms} into: hrs:{hours}, days_back:{days_back}")
+            self.logger.debug(f"PAST: {virtual_ms} into: hrs:{hours}, days_back:{days_back}")
             for day_back in range(days_back, -1, -1):
                 for hr in range(0, 24):
                     try:
-                        val = self.get_value(
-                            f'day/-{day_back}/hour/{hr}/{data_field}', correlation_hint)
+                        val = self.get_value(f'day/-{day_back}/hour/{hr}/{data_field}', correlation_hint)
                         if not isinstance(val, Exception):
                             pool.append(val)
                     except:
@@ -597,13 +583,11 @@ class OpenWeatherMap(SmartPlugin):
         elif operation == "avg":
             if len(pool) == 0:
                 return 0
-            return round(functools.reduce(
-                lambda x, y: x + y, pool) / len(pool), 2)
+            return round(functools.reduce(lambda x, y: x + y, pool) / len(pool), 2)
         elif operation == "sum":
             if len(pool) == 0:
                 return 0
-            return round(functools.reduce(
-                lambda x, y: x + y, pool), 2)
+            return round(functools.reduce(lambda x, y: x + y, pool), 2)
         elif operation == "all":
             return pool
         else:
