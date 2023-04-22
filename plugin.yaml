@@ -1455,4 +1455,4 @@ plugin_functions:
                 type: str
                 description:
                     de: "Datenquelle"
-                    de: "Data source key"
+                    en: "Data source key"
